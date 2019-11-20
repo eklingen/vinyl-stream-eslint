@@ -12,14 +12,14 @@
 //   Files with fixes (if any) are pushed back into the stream.
 //   Use this if you need more control, or need to do extra pre- or post- processing of files.
 
-const { relative } = require('path')
+const { join, relative } = require('path')
 const { Transform } = require('stream')
 
 const DEFAULT_OPTIONS = {
   eslint: {
     allowInlineConfig: true,
     cache: true,
-    cacheLocation: './node_modules/.eslintcache',
+    cacheLocation: join(process.cwd(), 'node_modules/.cache/eslint/'),
     cwd: process.cwd(),
     fix: true,
     fixTypes: ['problem', 'suggestion', 'layout'],

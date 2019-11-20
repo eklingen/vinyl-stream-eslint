@@ -1,4 +1,6 @@
 
 # Changelog
 
+v1.0.1 - Bugfix where eslint config wasn't passed properly
+         Changed default cache location
 v1.0.0 - Initial release

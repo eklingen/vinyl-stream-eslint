@@ -22,14 +22,14 @@ There are a few options you can play with:
 
 ### `eslint`
 
-Configuration options for eslint.
+Configuration options for eslint, passed verbatim. These are the default settings (they may differ from eslint's own defaults).
 
 ```
 eslintWrapper({
   eslint: {
     allowInlineConfig: true,
     cache: true,
-    cacheLocation: './node_modules/.eslintcache',
+    cacheLocation: cacheLocation: join(process.cwd(), 'node_modules/.cache/eslint/'),
     cwd: process.cwd(),
     fix: true,
     fixTypes: ['problem', 'suggestion', 'layout'],
