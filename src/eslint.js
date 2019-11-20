@@ -16,6 +16,9 @@ const { join, relative } = require('path')
 const { Transform } = require('stream')
 
 const DEFAULT_OPTIONS = {
+  config: false,
+  failOnError: false,
+
   eslint: {
     allowInlineConfig: true,
     cache: true,
@@ -26,10 +29,7 @@ const DEFAULT_OPTIONS = {
     ignore: true,
     reportUnusedDisableDirectives: false,
     globInputPaths: true
-  },
-
-  config: false,
-  failOnError: false
+  }
 }
 
 function outputFormatter (output = '') {
