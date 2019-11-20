@@ -58,7 +58,8 @@ function applyUnappliedFixesToResults (results) {
 }
 
 function eslintWrapper (options = {}) {
-  options = ({ ...DEFAULT_OPTIONS, ...options })
+  options = { ...DEFAULT_OPTIONS, ...options }
+  options.eslint = { ...DEFAULT_OPTIONS.eslint, ...options.eslint }
 
   if (typeof options.config === 'object') {
     options.eslint = { ...options.eslint, baseConfig: options.config, configFile: null, useEslintrc: false }
