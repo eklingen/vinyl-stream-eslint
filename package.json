@@ -1,6 +1,6 @@
 {
   "name": "@eklingen/vinyl-stream-eslint",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Small vinyl-stream wrapper -aka Gulp plugin- for eslint.",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "test": "echo '** TODO: Write tests! **'; echo 'Linting...'; eslint index.js --fix;"
   },
   "dependencies": {
-    "eslint": "^6.7.0"
+    "eslint": "^6.7.1"
   },
   "devDependencies": {
     "eslint": "^6.7.0",
