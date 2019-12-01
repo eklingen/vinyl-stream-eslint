@@ -11,7 +11,7 @@ Run eslint within your streams. Supports automatic fixing of files. Also has a f
 
 ## Usage
 
-```
+```javascript
 const eslintWrapper = require('@eklingen/vinyl-stream-eslint')
 stream.pipe(eslintWrapper())
 ```
@@ -24,7 +24,7 @@ There are a few options you can play with:
 
 Configuration options for eslint, passed verbatim. These are the default settings (they may differ from eslint's own defaults).
 
-```
+```javascript
 eslintWrapper({
   eslint: {
     allowInlineConfig: true,
@@ -44,13 +44,13 @@ eslintWrapper({
 
 You can pass a configuration object, a string to the configuration file or leave it out. When you leave it out, eslint will try to find the configuration file by itself. This is usually the best option.
 
-```
+```javascript
 eslintWrapper({
   config: { ... }
 })
 ```
 
-```
+```javascript
 eslintWrapper({
   config: '../.eslintrc.js'
 })
@@ -68,7 +68,7 @@ This plugin offers two different methods of running eslint.
 
 When you pass a `files` glob, any files in the stream are ignored (you can set your stream src to `read: false`). You can set `fix: true` to have eslint apply fixes directly to the source files on disk. This is mainly useful to simply lint everything and output the results.
 
-```
+```javascript
 eslintWrapper({
   files: 'src/scripts/**/*.js',
   fix: true
@@ -81,7 +81,7 @@ eslintWrapper({
 
 When you pass files through the stream (don't pass a `files` options), it will then remove those files from the stream. If you set `fix: true` any fixes are applied, and these fixed files are pushed back into the stream. This is mainly useful to lint individual files, like in a watch callback.
 
-```
+```javascript
 eslintWrapper({
   fix: true
 })
