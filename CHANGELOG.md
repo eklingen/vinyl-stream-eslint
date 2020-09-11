@@ -1,6 +1,7 @@
 
 # Changelog
 
+v2.0.1 - Upgrade dependencies
 v2.0.0 - Upgrade dependencies
 v1.1.5 - Upgrade dependencies
 v1.1.4 - Updated development node version to 12.16.0
