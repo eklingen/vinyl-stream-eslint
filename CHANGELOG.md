@@ -1,6 +1,7 @@
 
 # Changelog
 
+v3.0.3 - Downgrade ESLint back to v7
 v3.0.2 - Upgrade dependencies
 v3.0.1 - Upgrade dependencies
 v3.0.0 - Upgrade node to v14 LTS
