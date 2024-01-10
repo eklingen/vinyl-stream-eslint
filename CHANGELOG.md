@@ -1,7 +1,8 @@
 
 # Changelog
 
-v3.0.4 - DevEnv changes
+v3.0.5 - DevEnv changes
+v3.0.4 - Unpinned ESLint version
 v3.0.3 - Downgrade ESLint back to v7
 v3.0.2 - Upgrade dependencies
 v3.0.1 - Upgrade dependencies
