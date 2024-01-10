@@ -1,6 +1,7 @@
 
 # Changelog
 
+v4.0.0 - Update ESLint to v8
 v3.0.5 - DevEnv changes
 v3.0.4 - Unpinned ESLint version
 v3.0.3 - Downgrade ESLint back to v7

@@ -27,34 +27,14 @@ const DEFAULT_OPTIONS = {
     fix: true,
     fixTypes: ['problem', 'suggestion', 'layout'],
     ignore: true,
-    reportUnusedDisableDirectives: false,
+    reportUnusedDisableDirectives: null,
     globInputPaths: true,
   },
 }
 
 function outputFormatter(output = '') {
   output = output.toString().trim()
-  return output ? `\n${output.replace('\n\n\n', '\n\n')}\n` : ''
-}
-
-// Apply fixes manually when they're present but not yet applied. Bug in ESLint?
-function applyUnappliedFixesToResults(results) {
-  const { applyFixes } = require('eslint/lib/linter/source-code-fixer') // Internal API
-
-  results.forEach(result => {
-    const sourceText = result.source || result.getSourceCode() // .source is deprecated
-    const messages = result.messages
-
-    if (sourceText && messages.length) {
-      const fixedResult = applyFixes(sourceText, messages, true)
-
-      if (fixedResult.fixed) {
-        results[results.indexOf(result)] = { ...result, ...fixedResult }
-      }
-    }
-  })
-
-  return results
+  return (output ? `\n${output.replace('\n\n\n', '\n\n')}\n` : '').trim()
 }
 
 function eslintWrapper(options = {}) {
@@ -62,11 +42,11 @@ function eslintWrapper(options = {}) {
   options.eslint = { ...DEFAULT_OPTIONS.eslint, ...options.eslint }
 
   if (typeof options.config === 'object') {
-    options.eslint = { ...options.eslint, baseConfig: options.config, configFile: null, useEslintrc: false }
+    options.eslint = { ...options.eslint, baseConfig: options.config, overrideConfigFile: null, useEslintrc: false }
   } else if (typeof options.config === 'string') {
-    options.eslint = { ...options.eslint, baseConfig: null, configFile: options.config, useEslintrc: false }
+    options.eslint = { ...options.eslint, baseConfig: null, overrideConfigFile: options.config, useEslintrc: false }
   } else {
-    options.eslint = { ...options.eslint, baseConfig: null, configFile: null, useEslintrc: true }
+    options.eslint = { ...options.eslint, baseConfig: null, overrideConfigFile: null, useEslintrc: true }
   }
 
   if (options.files) {
@@ -77,31 +57,28 @@ function eslintWrapper(options = {}) {
 }
 
 function eslintGlobWrapper(options = {}) {
-  const CLIEngine = require('eslint').CLIEngine
-  const cli = new CLIEngine(options.eslint)
-  const formatter = cli.getFormatter('stylish')
+  //const CLIEngine = require('eslint').CLIEngine
+  //const cli = new CLIEngine(options.eslint)
+  //const formatter = cli.getFormatter('stylish')
+  const { ESLint } = require('eslint')
 
   function transform(file, encoding, callback) {
     return callback(null, file) // Any files in the stream are ignored
   }
 
-  function flush(callback) {
-    const report = cli.executeOnFiles(options.files, process.cwd())
+  async function flush(callback) {
+    const eslint = new ESLint(options.eslint)
+
+    //const report = cli.executeOnFiles(options.files, process.cwd())
+    const results = await eslint.lintFiles(options.files, process.cwd())
 
     if (options.eslint.fix) {
-      const fixableResults = report.results.filter(result => result.fixableErrorCount || result.fixableWarningCount)
-      const fixedResults = report.results.filter(result => result.output)
-
-      // Somehow, fixes are in the results, but not applied. Apply them manually. Bug in ESLint?
-      if (fixableResults.length && fixableResults.length > fixedResults.length) {
-        report.results = applyUnappliedFixesToResults(report.results)
-      }
-
-      CLIEngine.outputFixes(report)
+      ESLint.outputFixes(results)
     }
 
-    const revisedResults = report.results.filter(result => !result.output)
-    const output = outputFormatter(formatter(revisedResults)).trim()
+    const revisedResults = results.filter(result => !result.output)
+    const formatter = await eslint.loadFormatter('stylish')
+    const output = outputFormatter(formatter.format(revisedResults))
 
     if (output && options.failAfterError) {
       return callback(new Error(output))
@@ -118,20 +95,17 @@ function eslintGlobWrapper(options = {}) {
 }
 
 function eslintVinylWrapper(options = {}) {
-  const eslint = require('eslint')
+  const eslint = new ESLint(options.eslint)
 
-  const cli = new eslint.CLIEngine(options.eslint)
-  const formatter = cli.getFormatter('stylish')
-
-  function transform(file, encoding, callback) {
-    if (cli.isPathIgnored(relative(process.cwd(), file.path))) {
+  async function transform(file, encoding, callback) {
+    if (await eslint.isPathIgnored(relative(process.cwd(), file.path))) {
       return callback()
     }
 
-    const report = cli.executeOnText(file.contents.toString(), relative(process.cwd(), file.path))
+    const results = await eslint.lintText(file.contents.toString(), relative(process.cwd(), file.path))
 
     if (options.eslint.fix) {
-      const result = report.results[0]
+      const result = results[0]
 
       // Somehow, this is flakey - sometimes needs multiple passes to fix everything..
       if (result.output && !result.messages.length && result.output !== file.contents.toString('utf8')) {
@@ -140,8 +114,9 @@ function eslintVinylWrapper(options = {}) {
       }
     }
 
-    const revisedResults = report.results.filter(result => !result.output)
-    const output = outputFormatter(formatter(revisedResults)).trim()
+    const revisedResults = results.filter(result => !result.output)
+    const formatter = await eslint.loadFormatter('stylish')
+    const output = outputFormatter(formatter.format(revisedResults))
 
     if (output && options.failAfterError) {
       return callback(new Error(output))
