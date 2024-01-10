@@ -28,17 +28,17 @@ const DEFAULT_OPTIONS = {
     fixTypes: ['problem', 'suggestion', 'layout'],
     ignore: true,
     reportUnusedDisableDirectives: false,
-    globInputPaths: true
-  }
+    globInputPaths: true,
+  },
 }
 
-function outputFormatter (output = '') {
+function outputFormatter(output = '') {
   output = output.toString().trim()
   return output ? `\n${output.replace('\n\n\n', '\n\n')}\n` : ''
 }
 
 // Apply fixes manually when they're present but not yet applied. Bug in ESLint?
-function applyUnappliedFixesToResults (results) {
+function applyUnappliedFixesToResults(results) {
   const { applyFixes } = require('eslint/lib/linter/source-code-fixer') // Internal API
 
   results.forEach(result => {
@@ -57,7 +57,7 @@ function applyUnappliedFixesToResults (results) {
   return results
 }
 
-function eslintWrapper (options = {}) {
+function eslintWrapper(options = {}) {
   options = { ...DEFAULT_OPTIONS, ...options }
   options.eslint = { ...DEFAULT_OPTIONS.eslint, ...options.eslint }
 
@@ -76,16 +76,16 @@ function eslintWrapper (options = {}) {
   return eslintVinylWrapper(options)
 }
 
-function eslintGlobWrapper (options = {}) {
+function eslintGlobWrapper(options = {}) {
   const CLIEngine = require('eslint').CLIEngine
   const cli = new CLIEngine(options.eslint)
   const formatter = cli.getFormatter('stylish')
 
-  function transform (file, encoding, callback) {
+  function transform(file, encoding, callback) {
     return callback(null, file) // Any files in the stream are ignored
   }
 
-  function flush (callback) {
+  function flush(callback) {
     const report = cli.executeOnFiles(options.files, process.cwd())
 
     if (options.eslint.fix) {
@@ -117,13 +117,13 @@ function eslintGlobWrapper (options = {}) {
   return new Transform({ transform, flush, readableObjectMode: true, writableObjectMode: true })
 }
 
-function eslintVinylWrapper (options = {}) {
+function eslintVinylWrapper(options = {}) {
   const eslint = require('eslint')
 
   const cli = new eslint.CLIEngine(options.eslint)
   const formatter = cli.getFormatter('stylish')
 
-  function transform (file, encoding, callback) {
+  function transform(file, encoding, callback) {
     if (cli.isPathIgnored(relative(process.cwd(), file.path))) {
       return callback()
     }
